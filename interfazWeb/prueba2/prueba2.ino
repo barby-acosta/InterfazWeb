@@ -1,8 +1,10 @@
 #include <ESP8266WebServer.h>
 
 //AGREGADO
-#include <HC_SR04X2.h>
-#include <ControlMotor.h>
+//#include <HC_SR04X2.h>
+//#include <ControlMotor.h>
+
+
 
 /*DEFINICIONES DE CONFIGURACION*/
 #define BAUDRATE            115200
@@ -27,6 +29,17 @@
 #define F_Communication         3
 #define F_Movement              2
 
+/*DECLARACION DE VARIABLES GLOBALES*/
+//ControlMotor control(2, 3, 7, 4, 5, 6); // MotorDer1,MotorDer2,MotorIzq1,MotorIzq2,PWM_Derecho,PWM_Izquierdo
+//HC_SR04X2 sensor_distance;
+//ESP8266 wifi(Serial);
+
+uint8_t buffer[TAM_BUFFER] = {0}; //buffer para enviar y recibir informacion
+uint32_t len = 0; //Tamaño del mensaje recibido o el mensaje a enviar
+uint32_t frecuency = 1; //variables que nos permite implementar un porgrmacion de tareas
+String data_send;
+
+
 //variables de almacenamiento de distancias
 float distance_front = 0;
 float distance_right = 0;
@@ -36,8 +49,6 @@ float distance_back = 0;
 uint8_t direction = 0; // 0=stop, 1=front, 2=back //si va para adelante o para atras
 uint8_t speed = 0;   // 0=stop, 1=slow, 2=fast ,3=fasta&furious
 uint8_t turn = 0;    // 0=forward, 1=left, 2=right
-
-
 
 // FIN AGREGADO
 
@@ -81,6 +92,15 @@ void setup(){
     //Iniciar servidor
     server.begin();
     Serial.println("HTTP server started");
+
+    //AGREGADO
+    pinMode(HC_SR04BACK_OUT, OUTPUT);
+    pinMode(HC_SR04BACK_OUT, INPUT);
+    //sensor_distance.FrontSetup(HC_SR04FRONT_OUT, HC_SR04FRONT_IN);
+    //sensor_distance.RightSetup(HC_SR04RIGHT_OUT, HC_SR04RIGHT_IN);
+    //sensor_distance.LeftSetup(HC_SR04LEFT_OUT, HC_SR04LEFT_IN);
+    //sensor_distance.BackSetup(HC_SR04BACK_OUT, HC_SR04BACK_IN);
+    //FIN AGREGADO
 }
  
 void loop(){
