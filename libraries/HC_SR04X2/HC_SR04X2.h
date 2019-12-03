@@ -14,8 +14,8 @@ class HC_SR04X2 //Definicion de la clase
     //Funcion setup: Realiza la configuracion de los pines de Trigger y Echo del sensor
     void FrontSetup(int FrontPin_start, int FrontPin_data);
     void BackSetup(int BackPin_start, int Backin_data);
-    void HC_SR04X2::RightSetup(int RightPin_start, int RightPin_data);
-	void HC_SR04X2::LeftSetup(int LeftPin_start, int LeftPin_data);
+    void RightSetup(int RightPin_start, int RightPin_data);
+	void LeftSetup(int LeftPin_start, int LeftPin_data);
     //Funcion measurement: Realiza la medicion y devuelva la distancia
     float FrontMeasurement();
  	float FrontMeasurement_for(int cant_measurement);

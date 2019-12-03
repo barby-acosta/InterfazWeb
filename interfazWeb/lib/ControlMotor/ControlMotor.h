@@ -51,11 +51,11 @@ class ControlMotor{
     int pwmIzquierdo;       // Esta variable la usa internamente la librería para el PWM del motor Izquierdo
   public:
     ControlMotor(int md1, int md2, int mi1, int mi2, int pwmD, int pwmI);  // Asignamos los pines
-    void girarDerecha(int velocidad);
-    void girarIzquierda(int velocidad);
+    void girarDerecha();
+    void girarIzquierda();
     void avanzar(int velocidad);
-    void retroceder(int velocidad);
-    void parar(int velocidad);
+    void retroceder();
+    void parar();
  
 };
 

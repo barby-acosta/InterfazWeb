@@ -1,4 +1,4 @@
-// Incluimos las librerías necesarias según el arduino que estemos utilizando
+﻿// Incluimos las librerías necesarias según el arduino que estemos utilizando
 #if ARDUINO >= 100
   #include "Arduino.h"
 #else
@@ -38,7 +38,7 @@ Si queremos que se gire hacia atrás, la variable del motor B se coloca en  bajo
 La velocidad de giro de cada rueda depende del pwm con el cual se alimente al motor.
 */
 
-void ControlMotor::retroceder(int velocidad){ 
+void ControlMotor::retroceder(){ 
   digitalWrite(motorDerechoA,HIGH); 
   digitalWrite(motorDerechoB,LOW);
   digitalWrite(motorIzquierdoA,HIGH);
@@ -52,35 +52,46 @@ void ControlMotor::avanzar(int velocidad){
   digitalWrite(motorDerechoB,HIGH);
   digitalWrite(motorIzquierdoA,LOW);
   digitalWrite(motorIzquierdoB,HIGH);
-  analogWrite(pwmDerecho,90);
-  analogWrite(pwmIzquierdo,140);
+  if(velocidad==1){
+    analogWrite(pwmDerecho, 220);
+    analogWrite(pwmIzquierdo,220);
+  }
+  else if(velocidad==2){
+    analogWrite(pwmDerecho, 103);
+    analogWrite(pwmIzquierdo,150);
+  }
+  else if(velocidad==3){
+    analogWrite(pwmDerecho, 108);
+    analogWrite(pwmIzquierdo,160);
+  }
+  
 
 }
-void ControlMotor::girarIzquierda(int velocidad){ 
+void ControlMotor::girarIzquierda(){ 
   digitalWrite(motorDerechoA,LOW);
   digitalWrite(motorDerechoB,LOW);
   digitalWrite(motorIzquierdoA,LOW);
   digitalWrite(motorIzquierdoB,HIGH);
-  analogWrite(pwmDerecho,128);
-  analogWrite(pwmIzquierdo,128);
+  analogWrite(pwmDerecho,122);
+  analogWrite(pwmIzquierdo,122);
 
 }
-void ControlMotor::girarDerecha(int velocidad){ 
+void ControlMotor::girarDerecha(){ 
   digitalWrite(motorDerechoA,LOW);
   digitalWrite(motorDerechoB,HIGH);
   digitalWrite(motorIzquierdoA,LOW);
   digitalWrite(motorIzquierdoB,LOW);
-  analogWrite(pwmDerecho,80); 
-  analogWrite(pwmIzquierdo,80);
+  analogWrite(pwmDerecho,180); 
+  analogWrite(pwmIzquierdo,180);
 
 }
-void ControlMotor::parar(int velocidad){ 
+void ControlMotor::parar(){ 
   digitalWrite(motorDerechoA,LOW);
   digitalWrite(motorDerechoB,LOW);
   digitalWrite(motorIzquierdoA,LOW);
   digitalWrite(motorIzquierdoB,LOW);
-  analogWrite(pwmDerecho, 240);
-  analogWrite(pwmIzquierdo, 240);
+  analogWrite(pwmDerecho, 250);
+  analogWrite(pwmIzquierdo, 250);
 
 }
 
