@@ -1,8 +1,10 @@
+#include <SoftwareSerial.h>
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
 //============
-#include<SoftwareSerial.h> //Included SoftwareSerial Library
+//#include<SoftwareSerial.h> //Included SoftwareSerial Library
 //Started SoftwareSerial at RX and TX pin of ESP8266/NodeMCU
 SoftwareSerial s(3,1);
 //============
@@ -10,21 +12,22 @@ SoftwareSerial s(3,1);
 //Setear credenciales de la red 
 const char *ssid = "Autito";
 const char *password = "12345678";
-//IPAddress addr(10, 10, 10, 10);
 
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-
-//Setear credenciales de la red 
-const char *ssid = "Autito";
-const char *password = "12345678";
 //IPAddress addr(10, 10, 10, 10);
 
 //1-instancia de ESP8266WebServer 
 //ESP8266WebServerTemplate(IPAddress addr, int port = 80);
 //ESP8266WebServer server(addr, 80);
 ESP8266WebServer server(80);
- 
+
+
+ void sendJson(char *json)
+{
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(200, "application/json", json);
+}
+
+
 //4-Funciones encargada de enviar la respuesta al cliente
 void handleRoot(){
     server.sendHeader("Access-Control-Allow-Origin", "*");
@@ -90,9 +93,10 @@ void setup(){
         server.send(200, "text/plain", "ATRAS");
     });
 
-    server.on("/sensores", []() {
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.send(200, "text/plain", "SENSORES");
+      server.on("/sensores", []() {
+        sendJson(
+          "{\"adelante\":0, \"atras\":1, \"izquierda\":2, \"derecha\":3, \"direccion\":4, \"velocidad\":5, \"doblando\":6}"
+        );
     });
     
     server.on("/frenar", []() {
@@ -101,8 +105,21 @@ void setup(){
     });
    
     server.on("/mensaje", []() {
+      /*server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.send(200, "text/plain", "MENSAJE");*/
+      //===========
+      //Write '123' to Serial
+      s.write('1');
+      delay(1000);
+      
+      //while( Serial.read()==nullptr);
+      char data[2];
+      data[0] =  Serial.read(); //Read the serial data and store it
+      data[1]='\0';
+       
       server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.send(200, "text/plain", "MENSAJE");
+      server.send(200, "text/plain",  data);
+      //===========
     });   
   
    //Iniciar servidor
@@ -115,9 +132,4 @@ void loop(){
   //y ejecutar las acciones asociadas al ruteo.
   server.handleClient();
 
-  //===========
-  //Write '123' to Serial
-  s.write(123);
-  delay(1000);
-  //===========
 }
