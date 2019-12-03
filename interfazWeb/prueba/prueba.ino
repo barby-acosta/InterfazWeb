@@ -56,19 +56,12 @@ void handleNotFound()
 void setup()
 {
     s.begin(9600);
-    delay(1000);
-
-    Serial.begin(9600); //Begin Serial at 115200 Baud 9600
     WiFi.softAP(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED)
     { //Wait for connection
         delay(500);
-        Serial.println("Waiting to connect...");
     }
-
-    Serial.print("IP address: despues");
-    Serial.println(WiFi.localIP()); //Print the local IP
 
     //2-Definir la asociación entre la URL de la petición y
     //la acción que se ejecutará.
@@ -135,7 +128,6 @@ void setup()
 
     //Iniciar servidor
     server.begin(); //Start the server
-    Serial.println("HTTP server started");
 }
 
 void loop()
