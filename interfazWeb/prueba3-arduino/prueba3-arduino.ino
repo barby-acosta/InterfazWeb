@@ -7,7 +7,7 @@ void setup() {
 
 void loop() {
   data = Serial.read(); //Read the serial data and store it
-  //Serial.println("data recibida", data);
+  //Serial.print("data recibida", data);
   delay(1000);
  // while(data==nullptr);
   Serial.write('2');

@@ -48,7 +48,7 @@ void setup(){
     //===========
 
     delay(1000);
-    Serial.begin(9600); //Begin Serial at 115200 Baud 9600
+    //Serial.begin(9600); //Begin Serial at 115200 Baud 9600
     WiFi.softAP(ssid, password); 
 
     //Esto supuestamente te deja setear la IP del servidor. No funciona.
@@ -58,13 +58,13 @@ void setup(){
     IPAddress subnet(255,255,255,0);
     WiFi.config(ip, gateway, subnet);*/
        
-    if (WiFi.status() != WL_CONNECTED) {  //Wait for connection
+    /*if (WiFi.status() != WL_CONNECTED) {  //Wait for connection
       delay(500);
       Serial.println("Waiting to connect...");
-    }
+    }*/
     
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());  //Print the local IP
+    /*Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());  //Print the local IP*/
   
     //2-Definir la asociación entre la URL de la petición y
     //la acción que se ejecutará.
@@ -114,7 +114,7 @@ void setup(){
       
       //while( Serial.read()==nullptr);
       char data[2];
-      data[0] =  Serial.read(); //Read the serial data and store it
+      data[0] =  s.read(); //Read the serial data and store it
       data[1]='\0';
        
       server.sendHeader("Access-Control-Allow-Origin", "*");

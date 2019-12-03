@@ -1,14 +1,14 @@
 /*FUNCIONES ORIGINALES*/
-#include <Arduino.h>
+//#include <Arduino.h>
 
 /*FUNCIONES EDITADAS O DESARROLLADAS*/
 
 #include <HC_SR04X2.h>
 #include <ControlMotor.h>
-#include "ESP8266.h"
+//#include "ESP8266.h"
 
 /*DEFINICIONES DE CONFIGURACION*/
-#define BAUDRATE            115200
+#define BAUDRATE            9600 //115200
 
 #define HC_SR04FRONT_OUT    8 // Numero de pin por el cual se envia el pulso de START (trig)
 #define HC_SR04FRONT_IN     9 // Numero de pin por el cual se recibe informacion de la medioción (echo)
@@ -22,30 +22,31 @@
 #define HC_SR04BACK_OUT     A0 // Numero de pin por el cual se envia el pulso de START (trig)
 #define HC_SR04BACK_IN      A1 // Numero de pin por el cual se recibe informacion de la medioción (echo)
 
-#define TAM_BUFFER          128
+//#define TAM_BUFFER          128
 #define CRITIC_DISTANCE     40
 
 /*DEFINICIONES DE TIEMPO DE EJECUCION*/
-#define F_Sensed                1
+#define F_Sensed          1
+#define F_Movement        2
 #define F_Communication   3
-#define F_Movement           2
-
-char data; //Initialized variable to store recieved data
 
 /*DECLARACION DE VARIABLES GLOBALES*/
 ControlMotor control(2, 3, 7, 4, 5, 6); // MotorDer1,MotorDer2,MotorIzq1,MotorIzq2,PWM_Derecho,PWM_Izquierdo
 HC_SR04X2 sensor_distance;
-ESP8266 wifi(Serial);
+//ESP8266 wifi(Serial);
 
-uint8_t buffer[TAM_BUFFER] = {0}; //buffer para enviar y recibir informacion
-uint32_t len = 0; //Tamaño del mensaje recibido o el mensaje a enviar
+//uint8_t buffer[TAM_BUFFER] = {0}; //buffer para enviar y recibir informacion
+//uint32_t len = 0; //Tamaño del mensaje recibido o el mensaje a enviar
 uint32_t frecuency = 1; //variables que nos permite implementar un porgrmacion de tareas
-String data_send;
+char data; //Initialized variable to store recieved data
+//String data_send;
+
 //variables de almacenamiento de distancias
 float distance_front = 0;
 float distance_right = 0;
 float distance_left = 0;
 float distance_back = 0;
+
 //variables de desplazamiento -> el vehiculo lee estas variables y decide su movimiento
 uint8_t direction = 0; // 0=stop, 1=front, 2=back //si va para adelante o para atras
 uint8_t speed = 0;   // 0=stop, 1=slow, 2=fast ,3=fasta&furious
@@ -55,9 +56,9 @@ void setup(void)
 {
 
   Serial.begin(BAUDRATE);
-  wifi.restart();
+  //wifi.restart();
   delay(3000);
-  wifi.Configuration();
+  //wifi.Configuration();
   pinMode(HC_SR04BACK_OUT, OUTPUT);
   pinMode(HC_SR04BACK_OUT, INPUT);
   sensor_distance.FrontSetup(HC_SR04FRONT_OUT, HC_SR04FRONT_IN);
@@ -65,9 +66,9 @@ void setup(void)
   sensor_distance.LeftSetup(HC_SR04LEFT_OUT, HC_SR04LEFT_IN);
   sensor_distance.BackSetup(HC_SR04BACK_OUT, HC_SR04BACK_IN);
 
-  Serial.print("\n");
+  /*Serial.print("\n");
   Serial.print(wifi.getLocalIP());
-  Serial.print("\n");
+  Serial.print("\n");*/
 }
 
 void loop(void)
@@ -75,7 +76,10 @@ void loop(void)
 
   // MEDICION DE DISTANCIA Y FRENO DE EMEGENCIA
   /*Si es tiempo de medir la distancia*/
+  
   if (frecuency ==  F_Sensed) {
+
+      //enviar los valores instantaneos de los sensores
     Serial.print("Check de distancia\n");
     distance_front = sensor_distance.FrontMeasurement();
     Serial.print("front:");
@@ -164,14 +168,16 @@ void loop(void)
   // COMUNICACION
   if (frecuency == 3) { //SI es momento de procesar la comunicacion
     Serial.print("Check de comunicacion\n\n");
-    len = wifi.Receive_data(buffer);
-    if (len == 3) { //SI SE RECIBE ORDEN
+    //len = wifi.Receive_data(buffer);
+    data = Serial.read(); //Read the serial data and store it
+    //if (len == 3) { //SI SE RECIBE ORDEN
+    if (data == 'A') { //SI SE RECIBE ORDEN
       Serial.print("Se recibe una orden");
       Serial.print("\n");
       //REcibí un mensaje de desplazamiento, almacenamiento de los movimientos que decidió el usuario
-      direction = buffer[0] - 48; //se resta 48, pues el valro que se recibe está en ascci
-      speed = buffer[1] - 48;
-      turn = buffer[2] - 48;
+      direction = Serial.read() - 48; //se resta 48, pues el valro que se recibe está en ascci
+      speed = Serial.read() - 48;
+      turn = Serial.read() - 48;
       Serial.print("Direction recibida: ");
       Serial.print(direction);
       Serial.print("\n");
@@ -181,33 +187,36 @@ void loop(void)
       Serial.print("Turn recibido: ");
       Serial.print(turn);
       Serial.print("\n");
+      Serial.write(0);
 
     }
-    if (len == 1) { //SI PIDE INFORMACION
+    if (data == 'B') { //SI PIDE INFORMACION
       Serial.print("Servidor pide datos");
       Serial.print("\n");
+      Serial.write('2');
+      //envio informacion 
       //data_send=(String(distance_front, 0)+'/'+String(distance_back, 0)+'/'+String(direction,DEC)+'/'+String(speed,DEC)+'/'+String(turn,DEC)+'/');//preparación de la informacio na enviar
-      data_send = 'a';
-      for (len = 0; len < data_send.length(); len++) { // Se coloca el string en el buffer para su proximo envio
+      //data_send = 'a';
+     /* for (len = 0; len < data_send.length(); len++) { // Se coloca el string en el buffer para su proximo envio
         if (data_send[len] != 32) { //en el caso de que la conversion a string me de un caracater espacio, lo reemplazo por '0'(En la práctica sucede)
           buffer[len] = data_send[len];
         } else {
           buffer[len] = '0';
         }
         //Serial.print((char)buffer[len]);
-      }
+      }*/
       //Serial.print("\n");
       //envio del estado
-      Serial.print(data_send.length());
-      Serial.print("\n");
+      //Serial.print(data_send.length());
+      //Serial.print("\n");
 
-      wifi.Send_data(buffer, data_send.length());
+      //wifi.Send_data(buffer, data_send.length());
       // Serial.print("Envio de datos");
       //Serial.print("\r\n");
-      for (len = 0; len < data_send.length(); len++) {
+     /* for (len = 0; len < data_send.length(); len++) {
         Serial.print((char)buffer[len]);
       }
-      Serial.print("\n");
+      Serial.print("\n");*/
     }
   }
   // FIN COMUNICACION
